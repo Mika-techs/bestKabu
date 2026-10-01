@@ -1,12 +1,15 @@
 class objectColorField {
     color = "";
     name = "";
+    displayName = "";
+    hidden = false;
     id;
-    
-    constructor(name, color) {
+
+    constructor(name, color, displayName = "", hidden = false) {
         this.color = color;
         this.name = name;
-
-        this.id = name.replace("#", "").replace(" ", "").replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss");
+        this.displayName = displayName;
+        this.hidden = hidden;
+        this.id = name.replace(/[^A-Za-z0-9_-]/g, c => c.charCodeAt(0).toString(16));
     }
 }

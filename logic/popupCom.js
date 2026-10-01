@@ -1,11 +1,10 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    switch(request.key) {
+    switch (request.key) {
         case "getPopupInitState":
             sendResponse(getPopupInitState());
             break;
         case "colorButtonEvent":
-            response = setColor(request.values);
-            sendResponse({ failedInputValidation: response });
+            sendResponse({ failedInputValidation: setColor(request.values) });
             break;
         case "loginCheckboxEvent":
             setLoginState(request.values);
@@ -14,21 +13,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             setEncLoginState(request.values);
             break;
         case "loginSaveButtonEvent":
-            response = saveLogin(request.values);
-            sendResponse({ failedInputValidation: response });
+            sendResponse({ failedInputValidation: saveLogin(request.values) });
             break;
         case "loginDeleteButtonEvent":
             deleteLogin();
             break;
         case "loginEncButtonEvent":
-            response = onEncLogin(request.values);
-            sendResponse({ failedInputValidation: response });
+            sendResponse({ failedInputValidation: onEncLogin(request.values) });
             break;
         case "darkmodeToggleEvent":
             setDarkModeState(request.values);
             break;
         case "updateColorFields":
             updateColorFields(request.values);
+            sendResponse({ colors: getColorFields() });
             break;
         case "resetSubColors":
             sendResponse({ colors: getPresetColorsAsObjects() });
@@ -40,9 +38,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 function getPopupInitState() {
     return {
-        darkmodeState: isDarkModeState(),
+        darkmodeState: getDarkModeState(),
         loginState: isLoginState(),
         encState: isEncLoginState(),
+        loginPage: isLoginPage(),
         highlightColor: getColor(),
         colorFields: getColorFields()
     };

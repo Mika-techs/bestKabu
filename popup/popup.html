@@ -3,81 +3,97 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/kabu.css">
     <link rel="stylesheet" href="popup.css">
+    <script src="../logic/properties.js"></script>
     <script src="models.js"></script>
+    <script src="picker.js"></script>
     <script src="facade.js"></script>
     <script src="controller.js"></script>
     <title>BestKabu</title>
 </head>
 
 <body>
-    <h3 data-value="BetterKabu">BestKabu</h3>
-    <p id="pBestKabu">Changes Digikabu in BestKabu</p>
-    <hr class="sectionLine">
-    <div hidden id="mainPopup">
-        <div class="autologin">
-            <div class="loginHeader">
-                <input type="checkbox" id="loginCheckbox">
-                <b class="loginHeading">Login by Extension</b>
-            </div>
-            <div id="loginBody">
-                <p>Be aware of any <a class="link"
-                        href="https://github.com/Random-user420/bestKabu?tab=readme-ov-file#autologin-setup"
-                        target="_blank">securety risks</a> by using this feature.</p>
-                <input type="checkbox" id="loginEncCheckbox">Enable Password Protection
-                <br>
-                <div id="autologin">
-                    <input class="styled-input" type="text" id="loginUsername" placeholder="Username">
-                    <input class="styled-input" type="password" id="loginPassword" placeholder="Password">
-                    <input class="styled-input" type="password" id="loginEncKey" placeholder="Encryption Password" hidden>
-                    <div id="message-login" style="display: none;"></div>
-                    <div>
-                        <button type="button" id="loginSaveButton" class="styled-button">Save Login</button>
-                        <button type="button" id="loginDeleteButton" class="styled-button">Delete Login</button>
-                        <button type="button" hidden id="loginEncButton" class="styled-button">Login</button>
+    <header class="pp-head">
+        <span class="bk-brand">
+            <span class="bk-brand__logo" aria-hidden="true"></span>
+            <span class="bk-brand__name">Best<b>Kabu</b></span>
+        </span>
+        <span class="bk-chip" id="version"></span>
+    </header>
+
+    <main class="pp-main">
+        <section class="pp-card" id="gotoPopup">
+            <h2>Nicht auf digikabu</h2>
+            <p class="bk-muted">Öffne <a href="https://www.digikabu.de/" target="_blank">digikabu.de</a>, um BestKabu einzustellen.</p>
+        </section>
+
+        <div hidden id="mainPopup">
+            <section class="pp-card">
+                <h2>Darstellung</h2>
+                <div class="pp-field">
+                    <span class="pp-label">Modus</span>
+                    <div class="pp-segmented" role="radiogroup" aria-label="Modus" id="themeMode">
+                        <button type="button" class="pp-segmented__opt" role="radio" data-value="system">System</button>
+                        <button type="button" class="pp-segmented__opt" role="radio" data-value="light">Hell</button>
+                        <button type="button" class="pp-segmented__opt" role="radio" data-value="dark">Dunkel</button>
                     </div>
                 </div>
-            </div>
+                <div class="pp-field">
+                    <span class="pp-label">Akzentfarbe</span>
+                    <div class="pp-swatches" role="radiogroup" aria-label="Akzentfarbe" id="swatches">
+                        <button type="button" class="pp-swatch pp-swatch--custom" role="radio" id="customSwatch" title="Eigene Farbe" aria-label="Eigene Farbe" aria-expanded="false"></button>
+                    </div>
+                    <div id="accentPicker" hidden></div>
+                    <div class="pp-message" id="message-color" hidden></div>
+                </div>
+            </section>
+
+            <section class="pp-card" id="subjectColors">
+                <h2>Fächer</h2>
+                <p class="bk-muted bk-small" id="subjectsHint">Änderungen werden sofort gespeichert. Klick auf die Farbe öffnet die Auswahl.</p>
+                <p class="bk-muted bk-small" id="subjectsEmpty" hidden>Öffne den Stundenplan oder die Termine-Seite, um Fächer anzupassen.</p>
+                <table class="pp-subjects" id="subjectTable" hidden>
+                    <thead>
+                        <tr><th>Fach</th><th>Eigener Name</th><th>Farbe</th><th title="Im Stundenplan anzeigen">Zeigen</th></tr>
+                    </thead>
+                    <tbody id="sColors"></tbody>
+                </table>
+                <div class="pp-row" id="subjectActions" hidden>
+                    <button type="button" class="bk-btn bk-btn--small bk-btn--ghost" id="resetColors">Farben zurücksetzen</button>
+                </div>
+                <div class="pp-message" id="sCMessage" hidden></div>
+            </section>
+
+            <section class="pp-card">
+                <div class="pp-cardhead">
+                    <h2>Auto-Login</h2>
+                    <label class="pp-switch" title="Auto-Login an/aus">
+                        <input type="checkbox" id="loginCheckbox">
+                        <span class="pp-switch__slider"></span>
+                    </label>
+                </div>
+                <div id="loginBody" hidden>
+                    <p class="bk-muted bk-small">Beachte die <a href="https://github.com/Random-user420/bestKabu?tab=readme-ov-file#autologin-setup" target="_blank">Sicherheitsrisiken</a> dieser Funktion.</p>
+                    <label class="pp-check"><input type="checkbox" id="loginEncCheckbox"> Mit Passwort schützen</label>
+                    <input class="pp-input" type="text" id="loginUsername" placeholder="Benutzername" autocomplete="off">
+                    <input class="pp-input" type="password" id="loginPassword" placeholder="Passwort" autocomplete="off">
+                    <input class="pp-input" type="password" id="loginEncKey" placeholder="Schutz-Passwort" hidden>
+                    <div class="pp-row">
+                        <button type="button" id="loginSaveButton" class="bk-btn bk-btn--small bk-btn--active">Speichern</button>
+                        <button type="button" id="loginDeleteButton" class="bk-btn bk-btn--small bk-btn--ghost">Löschen</button>
+                        <button type="button" id="loginEncButton" class="bk-btn bk-btn--small" hidden>Einloggen</button>
+                    </div>
+                    <div class="pp-message" id="message-login" hidden></div>
+                </div>
+            </section>
         </div>
-        <hr class="sectionLine">
-        <div class="toggleDarkMode">
-            <h4>Toggle Dark Mode</h4>
-            <div class="toggleButton">
-                <img src="icons/sun-regular.svg" alt="sun icon" width="20px" height="20px">
-                <label class="switch">
-                    <input type="checkbox" id="darkModeToggle">
-                    <span class="slider round"></span>
-                </label>
-                <img src="icons/moon-solid.svg" width="20px" height="20px" alt="sun icon" class="Icon">
-            </div>
-        </div>
-        <hr class="sectionLine">
-        <div id="HLcolorPicker">
-            <h4>Highlight Color</h4>
-            <div id="colorInputField">
-                <input type="color" id="colorPicker" >
-                <input class="styled-input" type="text" maxlength="7" id="colorInput" placeholder="Example: #add8e6">
-                <button type="button" class="styled-button" id="changeColorBtn">Set color</button>
-            </div>
-        </div>
-        <div id="subjectColors">
-            <h4>Subject Colors</h4>
-            <div id="sColors"></div>
-            <button type="button" class="styled-button" id="setColors">Set colors</button>
-            <button type="button" class="styled-button" id="resetColors">Reset colors</button>
-            <br/>
-            <div id="sCMessage"></div>
-        </div>
-    </div>
-    <div id="gotoPopup">
-        <h4>Go to <a class="link" href="https://www.digikabu.de/" target="_blank">digikabu.de</a> to use this extension</h4>
-    </div>
-    <div id="warranty">
-        <h4>Warranty</h4>
-        <p>BestKabu is provided "as is", without any warranty. Use at your own risk.</p>
-    </div>
+    </main>
+
+    <footer class="pp-foot">
+        BestKabu wird „wie besehen“ ohne jede Gewährleistung bereitgestellt. Nutzung auf eigene Gefahr.
+    </footer>
 </body>
 
 </html>

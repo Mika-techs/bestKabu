@@ -9,3 +9,7 @@ function retrieve(key) {
 function retrieveBool(key) {
     return localStorage.getItem(key) == true || localStorage.getItem(key) == "true" ? true : false;
 }
+
+function remove(key) {
+    localStorage.removeItem(key);
+}

@@ -1,25 +1,19 @@
 function setColor(value) {
     if (validateColor(value.color)) {
-        store('color', value.color);
-        activeColor(value.color);
+        store('color', value.color.toLowerCase());
+        applyAccent(value.color);
         return false;
     }
-    else {
-        return true;
-    }
+    return true;
 }
 
 function getColor() {
     return validateColor(retrieve('color')) ? retrieve('color') : defaultHighlightColor;
 }
 
-function activeColor(color) {
-    document.documentElement.style.setProperty('--weekdayToday', color);
-}
-
 function setLoginState(state) {
     store('loginState', state.setLoginState);
-    if (state) {
+    if (state.setLoginState) {
         loginUnenc();
     }
 }
@@ -48,9 +42,7 @@ function saveLogin(values) {
         loginUnenc();
         return false;
     }
-    else {
-        return true;
-    }
+    return true;
 }
 
 function deleteLogin() {
@@ -61,71 +53,51 @@ function deleteLogin() {
 }
 
 function loginUnenc() {
-    if ((urlpath === "/" || urlpath === "/Login") && isLoginState() && !isEncLoginState()) {
+    if (isLoginPage() && !loginFailedBefore() && isLoginState() && !isEncLoginState()) {
         login(retrieve('username'), retrieve('password'));
     }
 }
 
 function onEncLogin(values) {
-    if ((urlpath === "/" || urlpath === "/Login") && isLoginState() && isEncLoginState()){
+    if (!values.encKey) return true;
+    if (isLoginPage() && isLoginState() && isEncLoginState()) {
         login(encrypt(retrieve('username'), values.encKey), encrypt(retrieve('password'), values.encKey));
     }
     return false;
 }
 
+// true = dark, false = light, null = follow the system (key removed)
 function setDarkModeState(values) {
-    store('darkmodeState', values.darkModeState);
-    toggleVisualMode(values.darkModeState);
-}
-
-function isDarkModeState() {
-    return retrieveBool('darkmodeState');
-}
-
-function highlightLessons() {
-    if (urlpath.includes("Stundenplan")) {
-        paintLessons();
+    if (values.darkModeState === null || values.darkModeState === undefined) {
+        remove('darkmodeState');
+    } else {
+        store('darkmodeState', values.darkModeState);
     }
+    applyTheme();
 }
 
-function callHidePassedDays() {
-    if (!isFutureWeek()) {
-        hidePassedDays();
-    }
+function getDarkModeState() {
+    return retrieve('darkmodeState') === null ? null : retrieveBool('darkmodeState');
 }
 
 function updateColorFields(values) {
-
-    if (urlpath.includes("Stundenplan")) {
-        values.forEach(element => {
-            if(validateColor(element.color)) {
-                lessonColor[element.name] = element.color;
-            }
-        });
-        paintLessons();
-
-        store("SubColors", JSON.stringify(lessonColor));
-    }
-}
-
-function getColorFields() {
-
-    if (urlpath.includes("Stundenplan")) {
-        //sets stored colors to lessonColor Object
-        retrieveLessonColors()
-
-        let objectColorFields = [];
-        const lessonNames = getLessonNames(objectColorFields);
-        lessonNames.forEach(name => {
-            let color = lessonColor[name];
-            if (color == undefined || color == null)
-            {
-                color = getColorFromHash(getHash(name));
-                lessonColor[name] = color;
-            }
-            objectColorFields.push(new objectColorField(name, color, null))
-        });
-        paintLessons();
-        return objectColorFields;
-    }
+    values.forEach(element => {
+        if (validateColor(element.color)) {
+            lessonColor[element.name] = element.color.toLowerCase();
+        }
+        const displayName = (element.displayName || '').trim();
+        if (displayName && displayName !== element.name) {
+            lessonNames[element.name] = displayName;
+        } else {
+            delete lessonNames[element.name];
+        }
+        hiddenLessons = hiddenLessons.filter(n => n !== element.name);
+        if (element.hidden) {
+            hiddenLessons.push(element.name);
+        }
+    });
+    store("SubColors", JSON.stringify(lessonColor));
+    store("SubNames", JSON.stringify(lessonNames));
+    store("SubHidden", JSON.stringify(hiddenLessons));
+    rerenderView();
 }

@@ -1,7 +1,7 @@
 {
     "name": "BestKabu",
-    "description": "BestKabu: Improve your experience of digikabu.de",
-    "version": "2.1.4",
+    "description": "BestKabu: a cleaner, modern digikabu.de – week grid, countdown, subject colours, dark mode",
+    "version": "3.0.0",
     "manifest_version": 3,
     "icons": {
         "16": "/icons/icon16.png",
@@ -27,9 +27,46 @@
     "permissions": [
         "storage"
     ],
-    "content_scripts": [{
-        "matches": ["https://*.digikabu.de/*", "http://*.digikabu.de/*", "https://digikabu.de/*", "http://digikabu.de/*"],
-        "js": ["logic/controller.js", "logic/init.js", "logic/facade.js", "logic/popupCom.js", "logic/properties.js", "logic/storage.js", "logic/utils.js", "logic/models.js"],
-        "css": ["init.css"]
-    }]
+    "content_scripts": [
+        {
+            "matches": [
+                "https://*.digikabu.de/*",
+                "http://*.digikabu.de/*",
+                "https://digikabu.de/*",
+                "http://digikabu.de/*"
+            ],
+            "run_at": "document_start",
+            "js": [
+                "logic/storage.js",
+                "logic/properties.js",
+                "logic/early.js"
+            ],
+            "css": [
+                "styles/kabu.css"
+            ]
+        },
+        {
+            "matches": [
+                "https://*.digikabu.de/*",
+                "http://*.digikabu.de/*",
+                "https://digikabu.de/*",
+                "http://digikabu.de/*"
+            ],
+            "run_at": "document_end",
+            "js": [
+                "logic/utils.js",
+                "logic/models.js",
+                "logic/parser.js",
+                "logic/controller.js",
+                "logic/views/dom.js",
+                "logic/views/chrome.js",
+                "logic/views/timetable.js",
+                "logic/views/calendar.js",
+                "logic/views/absences.js",
+                "logic/facade.js",
+                "logic/popupCom.js",
+                "logic/init.js"
+            ]
+        }
+    ]
 }
