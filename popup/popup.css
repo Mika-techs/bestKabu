@@ -100,3 +100,4 @@ body { width: 380px; margin: 0; padding: 12px; box-sizing: border-box; }
 .pp-message--error { background: var(--cancel-soft); color: var(--cancel); }
 
 .pp-foot { margin: 12px 2px 0; color: var(--text-muted); font-size: .75rem; text-align: center; }
+.pp-foot__note { margin: 6px 0 0; font-size: .68rem; opacity: .8; }
